@@ -19,19 +19,25 @@ class SceneManager{
   Scene actualScene;
   
   SceneManager(){
-    scenes = new Scene[10];
-    scenes[0] = new Nothing();
-    scenes[0].initialScene();
-    scenes[1] = new Tv(); 
-    scenes[2] = new TvMove();
-    scenes[3] = new Slashes();
-    scenes[4] = new Like();
-    scenes[5] = new BigLike();
-    
-    scenes[6] = new WordsGrow();
-    scenes[7] = new ImgGrid();
-    scenes[8] = new TextShake(); 
 
+    Scene [] allScenes = {  new Nothing(),
+                new Tv(), //1
+                new TvNoise(), //2
+                new TvMove(), //3
+                new Slashes(), //4
+                new Skeleton(), //5
+                new WordsGrow(), //6
+                new Fireworks(), //7
+                new Balls(), //8
+                new HBVideo(), //9
+                new Like(),
+                new BigLike(),
+                new TextShake()
+                
+              };
+
+    scenes =allScenes;
+    scenes[0].initialScene();
     actualScene = scenes[0];
   }
 

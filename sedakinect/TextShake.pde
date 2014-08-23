@@ -5,6 +5,7 @@ class TextShake implements Scene
   Letter[] letters;
   int h = 20;
   PFont f;
+  FloatList middles;
 
   public TextShake(){};
 
@@ -28,17 +29,21 @@ class TextShake implements Scene
       }
 
     }
+    middles = new FloatList();
   };
 
   void drawScene(){
-    getMiddle();
+    getDancers();
+    middles = dancers.getAllMiddles();
     background(255);
     for (int i = 0; i < letters.length; i++) {
-
-      if ((middle_x + 15 > letters[i].homex)&&(middle_x - 15 < letters[i].homex)) {
-        letters[i].shake();
-        letters[i].change('d','f');
-      } 
+      for(int j = 0; j< middles.size();j++){
+        float middle_x = middles.get(j);
+        if ((middle_x + 15 > letters[i].homex)&&(middle_x - 15 < letters[i].homex)) {
+          letters[i].shake();
+          letters[i].change('d','f');
+        }  
+      }
 
       letters[i].display();
       letters[i].home();

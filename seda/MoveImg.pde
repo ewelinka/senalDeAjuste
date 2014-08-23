@@ -28,7 +28,24 @@ class MoveImg implements Scene
 
   String getSceneName(){return "MoveImg";};
 
-  void onPressedKey(String k){};
+  
+  void onPressedKey(String k){
+    if (k == "UP") upSpeed();
+
+    if (k == "DOWN") downSpeed();
+    //
+    // if (k == "RIGHT") this.radius += 5;
+    // if (k == "LEFT") this.radius = max(10,this.radius-=5);
+    
+  };
+
+  void upSpeed(){
+    easing +=0.01;
+    
+  }
+  void downSpeed(){
+    easing = max(0.01, easing-0.01);
+  }
 
   void onImg(PImage img){};
 

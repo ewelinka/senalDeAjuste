@@ -1,3 +1,4 @@
+
 class TvMove implements Scene
 {   
   int tv_width,tv_height;
@@ -27,7 +28,11 @@ class TvMove implements Scene
 
   void drawScene(){
 
-    getMiddle();
+    getDancers();
+    // we will take middle value of random dancer
+    float middle_x = dancers.getFirstDancerMiddle();
+    //float middle_x = dancers.getRandomDancerMiddle()
+    
     background(bg); 
 
     if(middle_x>0) dx = (middle_x-bg.width/2) - offset;
@@ -43,39 +48,20 @@ class TvMove implements Scene
 
   String getSceneName(){return "TvMove";};
 
-  void onPressedKey(String k){};
+  void onPressedKey(String k){
+    if (k == "UP") upSpeed();
+    if (k == "DOWN") downSpeed();
+    
+  };
+
+  void upSpeed(){
+    easing +=0.01;
+    
+  }
+  void downSpeed(){
+    easing = max(0.01, easing-0.01);
+  }
 
   void onImg(PImage img){};
 
-  void drawNoise(){
-    loadPixels();
-    // For every x,y coordinate in a 2D space, calculate a noise value and produce a brightness value
-    for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
-        if(random(100)>50) pixels[x+y*width] = color(255);
-        else pixels[x+y*width] = color(40);
-      }
-    }
-    updatePixels();
-  }
-
-  void drawTvMove(int window_w, int window_h, int bars_nr, color[] colors) {
-    noSmooth();
-    noStroke();
-    int bar_width = window_w / bars_nr +1;
-
-    int whichBar;
-    if(middle_x < 1) whichBar = -1;
-    else whichBar = (int)(middle_x / bar_width);
-
-
-    int x1, xM;
-    xM = (int)(whichBar * bar_width);
-    for (int i = 0; i < bars_nr; i ++) {
-      fill(colors[i]);
-
-      x1 = (int)(i * bar_width);
-      if(xM != x1) rect(x1, 0, bar_width, window_h); 
-    }
-  }
 }

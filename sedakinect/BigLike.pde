@@ -23,6 +23,7 @@ class BigLike implements Scene
   void drawScene(){
     background(like);
     getClosest();
+    // could be done with getFirstDancerDepth()
     if (closest_z > 0 ){
       likes = (int)closest_z;
     }

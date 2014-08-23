@@ -1,4 +1,4 @@
-class Tv implements Scene
+class TvNoise implements Scene
 {   
   
   color[] main_bars={ 
@@ -12,13 +12,22 @@ class Tv implements Scene
   };
 
   IntList excluded;
-
   int tv_width,tv_height;
   int bars_nr,bar_width;
 
-  public Tv(){};
 
-  void closeScene(){};
+  AudioPlayer tuuu ;
+  AudioPlayer whiteNoise;
+  boolean isWhite;
+
+  public TvNoise(){};
+
+  void closeScene(){
+    tuuu.close();
+    whiteNoise.close();
+    minim.stop();
+    //super.stop();
+  };
 
   void initialScene(){
     background(0);
@@ -27,6 +36,15 @@ class Tv implements Scene
     bars_nr =7;
     bar_width = tv_width / bars_nr +1;
     excluded = new IntList();
+
+    //minim = new Minim (this);
+    tuuu = minim.loadFile ("1khz.mp3");
+    tuuu.loop();
+    whiteNoise  = minim.loadFile ("wg.wav");
+    isWhite = false;
+
+    //tuuu.play();
+
   };
 
   void drawScene(){
@@ -34,12 +52,13 @@ class Tv implements Scene
     drawNoise();
     getDancers();
     generateExcluded();
+    playNoise();
     drawTv(tv_width,tv_height,7,main_bars);
     drawLine();
 
   };
 
-  String getSceneName(){return "Tv";};
+  String getSceneName(){return "TvNoise";};
 
   void onPressedKey(String k){};
 
@@ -78,5 +97,22 @@ class Tv implements Scene
       excluded.append((int)(middle_x/ bar_width));
     }    
   }
+
+  void playNoise(){
+    if(excluded.size()==1){
+      tuuu.pause();
+      if(whiteNoise.isPlaying() == false){
+        whiteNoise.rewind();
+        whiteNoise.play();
+      }
+    }else{
+      whiteNoise.pause();
+      if(tuuu.isPlaying() == false){
+        tuuu.rewind();
+        tuuu.play();
+      }
+    }
+  }
+
 }
 

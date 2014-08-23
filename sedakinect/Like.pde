@@ -31,20 +31,21 @@ class Like implements Scene
 
   void drawScene(){
     background(255);
-    getMiddle();
-    if (maxRight_y > 0 && maxRight_x > 0){
-      likes =  (int)(height - maxRight_y);
-      dislikes = (int)maxRight_x;
+    getDancers();
+    PVector p = dancers.getFirstDancerRight();
+    if (p.x > 0){
+      likes =  (int)(height - p.y);
+      dislikes = (int)p.x;
     }
     
   
-    float targetX = maxRight_x;
+    float targetX = p.x;
     float dx = targetX - x;
     if(abs(dx) > 1) {
       x += dx * easing;
     }
     
-    float targetY = maxRight_y;
+    float targetY = p.y;
     float dy = targetY - y;
     if(abs(dy) > 1) {
       y += dy * easing;
