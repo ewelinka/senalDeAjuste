@@ -31,6 +31,7 @@ class SceneManager{
     scenes[6] = new ImgGrid();
     scenes[7] = new BigLike();
     scenes[8] = new Points(); 
+    scenes[9] = new WordsGrow();
 
     actualScene = scenes[0];
   }
