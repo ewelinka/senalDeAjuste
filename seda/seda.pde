@@ -6,7 +6,7 @@ ArrayList<Character> numbers =new ArrayList<Character>();
 Capture liveVideo;
 
 void setup(){
-  size(1024, 768,P3D);
+  size(1024, 600,P3D);
 //  size(displayWidth, displayHeight, P3D);
 
   numbers.add(0,'0');
