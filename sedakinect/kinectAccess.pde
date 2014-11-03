@@ -1,29 +1,32 @@
-// RIGHT
-void getMostRight(){
+void contextupdate(){
   context.update();
-  int[]   userMap = context.userMap();
-  int steps = 1;
-  int index;
- float  maxRight_x = 0;
- float maxRight_y = 0;
-
-  boolean gotOne =false;
-  for(int x=(context.depthWidth()-1);x > 0 && !gotOne;x-=steps)
-    {
-    for(int y=0;y < context.depthHeight() && !gotOne;y+=steps)
-    {
-      index = x + y * context.depthWidth();
-
-      if(userMap[index] > 0)
-      { 
-        maxRight_x = map_x(x);
-        maxRight_y = map_y(y);
-
-        gotOne = true;
-      }
-    }
-  }
 }
+// RIGHT
+// void getMostRight(){
+//   contextupdate();
+//   int[]   userMap = context.userMap();
+//   int steps = 1;
+//   int index;
+//  float  maxRight_x = 0;
+//  float maxRight_y = 0;
+
+//   boolean gotOne =false;
+//   for(int x=(context.depthWidth()-1);x > 0 && !gotOne;x-=steps)
+//     {
+//     for(int y=0;y < context.depthHeight() && !gotOne;y+=steps)
+//     {
+//       index = x + y * context.depthWidth();
+
+//       if(userMap[index] > 0)
+//       { 
+//         maxRight_x = map_x(x);
+//         maxRight_y = map_y(y);
+
+//         gotOne = true;
+//       }
+//     }
+//   }
+// }
 
 
 void drawDancer(){
@@ -34,13 +37,14 @@ void drawDancer(){
 
 
 void drawLine(){
-  stroke(0,255,0);
-  for (Entry<Integer,Dancer> idancer : dancers.hm.entrySet()) {
-    Dancer da = idancer.getValue();
-    float middle_x = da.getMiddle();
-    line(middle_x,0,middle_x,height);
-    ellipse(middle_x, da.top,10,10);
-  }
+  // stroke(0,255,0);
+  // strokeWeight(1);
+  // for (Entry<Integer,Dancer> idancer : dancers.hm.entrySet()) {
+  //   Dancer da = idancer.getValue();
+  //   float middle_x = da.getMiddle();
+  //   line(middle_x,0,middle_x,height);
+  //   ellipse(middle_x, da.top,10,10);
+  // }
 }
 
 void drawRightLine(){
@@ -57,9 +61,17 @@ void drawRightPoint(){
   ellipse(pos.x, pos.y,10,10);  
 }
 
+void drawFDMiddleAndTopPoint(){
+  stroke(0,255,0);
+  fill(255,255,0);
+  PVector pos = dancers.getFirstDancerMiddleAndTop();
+  ellipse(pos.x, pos.y,10,10);  
+}
+
+
 //DEPTH
 void getClosest(){
-  context.update();
+  contextupdate();
   int[]   userMap = context.userMap();
   int[]   depthMap = context.depthMap();
  
@@ -83,11 +95,12 @@ void getClosest(){
 }
 
 
-void getDancers(){
+void getDancersOrg(){
   dancers.cleanHm();
-  context.update();
+  contextupdate();
   int[]   userMap = context.userMap();
   int[]   depthMap = context.depthMap();
+
   int steps = 1;
   int index;
 
@@ -109,7 +122,82 @@ void getDancers(){
   dancers.rescale();
 }
 
+void getDancers(){
+  dancers.cleanHm();
+  contextupdate();
+  int[]   userMap = context.userMap();
+  int[]   depthMap = context.depthMap();
+  int [] alternatives = new int[context.depthWidth()];
+  int [] alterDepths  = new int[context.depthWidth()];
 
+  int steps = 1;
+  int index;
+
+  boolean hasAlternatives = false;
+
+  for(int x=0;x <context.depthWidth();x+=steps)
+  {
+    // initialize this field with 0
+    alternatives[x] = 0;
+    alterDepths[x] = 8000;
+    for(int y=0;y < context.depthHeight() ;y+=steps)
+    {
+      index = x + y * context.depthWidth();
+      int d = depthMap[index];
+      if(d>0){
+        int userNr =userMap[index];
+        if( userNr > 0)
+        { 
+          dancers.updateDancer(userNr,x,y,d);
+        }
+        // alternative
+        if((d<3680) && (y < 570)){
+          hasAlternatives =true;
+          alternatives[x]+=1;
+          if (d < alterDepths[x]) alterDepths[x] = d;
+        }
+      }
+    }
+  }
+  if(!dancers.hasDancers()){
+    // we use alternatives
+    if(hasAlternatives) getDancersFromAlternatives(alternatives, alterDepths);
+  }
+
+  dancers.rescale();
+}
+
+void getDancersFromAlternatives(int [] alter, int [] alterZ){
+  int dancerIdx = 1;
+  boolean hasSomething = true;
+  int sizeOfSomething = 0;
+  int startIdx = 0;
+  int verticalSum = 0;
+
+  for(int x=0;x <context.depthWidth();x+=1){
+    if((alter[x]>0) && !(alter[x]==8000)){
+      if(!hasSomething) startIdx = x;
+      sizeOfSomething+=1;
+      hasSomething = true;
+      verticalSum+=alter[x];
+    }else{
+      
+      if((sizeOfSomething > 60) && (verticalSum > 1000)){
+        dancers.updateDancer(dancerIdx,startIdx + (x-1-startIdx)/2,240,alterZ[x-1]);
+        //println("XXX update from alternatives XXX with id "+dancerIdx + " start "+startIdx+" end "+x );
+        // fill(255);
+        // rect(0,0,width, height);
+        if(hasSomething) dancerIdx+=1;
+      } 
+      verticalSum =0;
+      hasSomething = false;
+      sizeOfSomething = 0;
+      
+    }
+  }
+
+
+}
 
 
 PImage getBigImage(){
@@ -117,7 +205,7 @@ PImage getBigImage(){
   img.loadPixels();
   PImage bigImg = new PImage(width,height); 
   bigImg.loadPixels();
-  context.update();
+  contextupdate();
 
   int[]   depthMap = context.depthMap();
   int[]   userMap = context.userMap();
@@ -166,9 +254,7 @@ PImage getBigImage(){
 
 void onNewUser(SimpleOpenNI curContext, int userId)
 {
-  println("onNewUser - userId: " + userId);
-  println("\tstart tracking skeleton");
-  
+  println("onNewUser - userId: " + userId+ " start tracking skeleton");
   curContext.startTrackingSkeleton(userId);
 }
 
