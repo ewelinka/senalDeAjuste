@@ -56,9 +56,7 @@ class TvNoiseAndStay implements Scene
   void drawScene(){
     drawNoise();
     getDancers();
-        // esta va solo para probar si mejora el macaquito!!!
-   // int[] userList = context.getUsers();
-    // ---------------------------------------
+
     // we draw just one snow stripe or we cover the surface
     if(first == true) drawScene1();
     else drawScene2();
