@@ -13,7 +13,7 @@ class Dancer
     pos_left = new PVector(left_x,left_y);
     pos_right = new PVector(left_x, left_y);
     top = left_y;
-    depth = depth;
+    this.depth = depth;
     middle = left_x;
   }
 
@@ -22,7 +22,8 @@ class Dancer
   float getTop(){ return top;}    
 
   float getMiddle(){ return middle;}
-  int getDepth(){ return depth;}
+ // PVector getMiddleTop(){ return PVector(middle,top);}
+  int getDepth(){ return this.depth;}
 
   void checkRightTopDepth(float x, float y, int d){
     if(x > pos_right.x) {
@@ -30,13 +31,14 @@ class Dancer
       pos_right.y = y;
     }
     if(y < top) top = y;
-    if(d < depth) depth = d;
+    if(d < this.depth) this.depth = d;
   }
 
+
   void setRescaledValues(){
-    pos_left.x = map_x(pos_left.x);
+    pos_left.x = map_x(pos_left.x, this.depth);
     pos_left.y = map_y(pos_left.y);
-    pos_right.x = map_x(pos_right.x);
+    pos_right.x = map_x(pos_right.x, this.depth);
     pos_right.y = map_y(pos_right.y);
     top = map_y(top);
     middle = min(pos_left.x,pos_right.x) + abs(pos_left.x - pos_right.x)/2;
@@ -70,6 +72,10 @@ class DancersManager {
     hm.put(nr,dancer); 
   }
 
+  Dancer getDancer(int dancerNr){
+    return (Dancer)hm.get(dancerNr);
+  }
+
   void cleanHm(){ 
     ids.clear();
     hm.clear();
@@ -90,6 +96,10 @@ class DancersManager {
   int getDancersNr(){ return hm.size();}
 
   boolean hasDancers(){return hm.size() > 0 ;}
+
+  boolean hasDancer(int dancerNr){
+    return hm.containsKey(dancerNr);
+  }
 
   float getRandomDancerMiddle(){
     float m = 0;
@@ -118,6 +128,17 @@ class DancersManager {
       positionsRL.add(da.getLeft());
     }
     return positionsRL;
+  }
+
+  float getDancerMiddle(int dancerNr){
+    Dancer d = getDancer(dancerNr);
+    return d.getMiddle();
+  }
+
+  PVector getDancerMiddleAndTop(int dancerNr){
+    Dancer d = getDancer(dancerNr);
+    PVector mt = new PVector(d.getMiddle(), d.getTop());
+    return mt;
   }
 
   float getFirstDancerMiddle(){
